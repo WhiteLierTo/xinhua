@@ -1,0 +1,12 @@
+调用：
+<school-pano style="width: 100vw; height: 100vh;position: absolute;top: 0;"></school-pano>
+schoolPano: () => import("../../../components/pano/school")
+
+  created() {
+    window.openObj = this;
+  },
+
+ index.html:
+  function testClick() {
+    window.openObj.testHandleClick();
+  }

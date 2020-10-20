@@ -1,0 +1,366 @@
+<krpano>
+
+
+
+  	<!-- setup stuff -->
+	<events name="tourevents" keep="true" onxmlcomplete="setup_first_scene();" />
+
+  	<action name="setup_first_scene" scope="local">
+		set(view, tx=get(image.ox), ty=get(image.oy), tz=get(image.oz));
+		set(events[tourevents].onxmlcomplete, null);
+		set(events[tourevents].onloadcomplete,
+			set(events[tourevents].onloadcomplete, moveto_scene_center() );
+		 );
+	</action>
+
+    	<action name="generate_floor_hotspots" autorun="onstart" scope="local">
+		set(floorheight, get(fh));
+		for(set(i,0), i LT style.count, inc(i),
+			indexoftxt(is_everpano3D_style, get(style[get(i)].name), 'everpano3d_');
+			if(is_everpano3D_style == 0,
+				copy(st, style[get(i)]);
+				addhotspot(calc('floorspot_' + (i+1)), hs);
+				hs.loadstyle(floorspot);
+				copy(hs.tx, st.ox);
+				copy(hs.tz, st.oz);
+				calc(hs.ty, floorheight + 1.0*st.oy - 1.0);
+				copy(hs.linkedscene, st.linkedscene);
+			);
+		);
+	</action>
+
+  	<style name="floorspot" keep="true" type="text"
+  		url="res/coordinate.png"
+		css="font-size:20px;text-align:center;" vcenter="true"
+		width="200" height="200" scale="0.15"
+		bgroundedge="100" bgborder="2 0x000000 1" bgshadow="0 0 5 0xFFFFFF 1.0"
+		oversampling="2" mipmapping="true" zorder="1"
+		distorted="true" depth="0" depthbuffer="true"
+		torigin="world" rotationorder="xyz" rx="-90"
+		xalpha="0"
+		alpha="0.3"
+		onover.addevent="tween(scale,0.16); tween(alpha,0.6);"
+		onout.addevent="tween(scale,0.15); tween(alpha,0.3);"
+		onclick="floorspot_onclick();"
+		/>
+	<action name="floorspot_onclick" scope="local">
+		if(xml.scene != caller.linkedscene,
+			loadscene(get(caller.linkedscene),null,MERGE|KEEPVIEW|KEEPMOVING,BLEND(0.5));
+		);
+		tween(view.tx|view.ty|view.tz, calc(image.ox + '|' + image.oy + '|' + image.oz), 2.0, default);
+	</action>
+
+  		<!-- using arrow hotspots for direct scene navigation -->
+	<style name="arrowspot"
+		zoom="true"
+		capture="false"
+		depth="0"
+		depthbuffer="true"
+		alpha="0"
+		zorder="3"
+		enabled="false"
+		onloaded="delayedcall(calc(customtransitiontime !== null ? (customtransitiontime+0.5) : 0.5), tween(alpha,0.5,0.3,default,set(enabled,true)); );"
+		onover="tween(alpha,0.7);"
+		onout="tween(alpha,0.5);"
+		/>
+
+	<style name="doorspot"
+		type="text"
+		distorted="true"
+		capture="false"
+		depth="0"
+		alpha="0.0"
+		zorder="0"
+		enabled="false"
+		onloaded="delayedcall(calc(customtransitiontime !== null ? (customtransitiontime+0.5) : 0.5), set(enabled,true); );"
+		/>
+
+
+	<!-- action for loading scenes -->
+	<action name="tour_loadscene" scope="local" args="scenename">
+		loadscene(get(scenename), null, MERGE|KEEPVIEW|KEEPMOVING, BLEND(2.0));
+	</action>
+
+
+	<!-- a style for changing depthmap settings for all scenes -->
+	<style name="depthmapsettings" background="none" />
+
+	<!-- global hotspots -->
+
+	<style name="infospot" keep="true" type="text"
+		html="i" css="font-size:60px;text-align:center;" vcenter="true"
+		width="70" height="70" scale="0.2"
+		bgroundedge="36" bgborder="2 0x000000 1" bgshadow="0 0 5 0xFFFFFF 1.0"
+		oversampling="2" mipmapping="true" depth="0" depthbuffer="true" zorder="2"
+		zoom="true" torigin="world"
+		autoalpha="true" alpha="0.0"
+		onloaded.addevent="delayedcall(1,tween(alpha,0.5));"
+		onover.addevent="tween(scale,0.23,0.2,easeoutback); tween(alpha,0.7);"
+		onout.addevent="if(enabled, tween(scale,0.2,0.2); tween(alpha,0.5); )"
+		onclick.addevent="dollhouse_off();"
+		/>
+
+	<style name="infospottext" keep="true" type="text"
+		css="color:#000000;font-size:20px;text-align:center;" vcenter="true" scale="0.2"
+		bgcolor="0xFFFFFF" padding="6 12"
+		oversampling="2" mipmapping="true" depth="0"  depthbuffer="true"
+		distorted="true" torigin="world"
+		enabled="false"
+		autoalpha="true" alpha="0.0"
+		/>
+
+		<style name="spottext" keep="true" type="text"
+		css="color:#000000;font-size:20px;text-align:center;" vcenter="true" scale="0.2"
+		bgcolor="0xFFFFFF" padding="6 12"
+		oversampling="2" mipmapping="true" depth="0"  depthbuffer="true"
+		distorted="true" torigin="world"
+		enabled="false"
+		autoalpha="true" alpha="1.0"
+		/>
+
+
+
+
+	<action name="show_info_text" scope="local" args="targetscene,infoelement,soundpath,x,y,z,h,v,fov">
+
+		if(infoelement != null,tween(caller.alpha, 0.0);set(caller.enabled, false););
+
+		dollhouse_off();
+
+		calc(targetmovecall, 'webvr_lookto('+h+','+v+',2.0,easeinoutsine);tween(view.tx|view.ty|view.tz|view.fov,'+x+'|'+y+'|'+z+'|'+fov+',2.0,easeinoutsine);');
+		if(xml.scene != targetscene,
+			copy(global.customtransition, targetmovecall);
+			tour_loadscene(get(targetscene));
+		  ,
+			targetmovecall();
+		);
+
+		if(infoelement != null,
+			delayedcall(2.0,
+				tween(hotspot[get(infoelement)].alpha, 1.0, 1.0);
+			);
+		);
+
+		if(soundpath != null,delayedcall(3.5,playsound(auto, get(soundpath)););
+			set(hasmoved, false);
+			set(startpos, x=get(view.tx), y=get(view.ty), z=get(view.tz));
+			asyncloop(hasmoved == false,
+				calc(d, sqrt((view.tx-startpos.x)^2 + (view.ty-startpos.y)^2 + (view.tz-startpos.z)^2) );
+				if(d GT 50,
+					set(hasmoved, true);
+				);
+			  ,
+				if(infoelement != null,
+					tween(hotspot[get(infoelement)].alpha, 0.0, 0.5, default,
+						tween(caller.alpha, 0.5);
+						set(caller.enabled, true);
+					);
+				  ,
+					tween(caller.alpha, 0.5);
+					set(caller.enabled, true);
+				);
+
+
+			);
+		);
+	</action>
+
+
+    <action name="goarrow">
+
+    transition(get(tx),get(ty),get(tz),get(htv),get(sceneto));
+
+    </action>
+
+  	<!-- transition actions -->
+
+	<action name="moveto_scene_center" scope="local">
+		if (global.customtransition != 'SKIP',
+
+			if(global.customtransition !== null,
+				dollhouse_off();
+				global.customtransition();
+			  ,
+				tween(view.tx|view.ty|view.tz, calc(image.ox + '|' + image.oy + '|' + image.oz), 2.0, easeinoutsine);
+			);
+
+			<!-- delayedcall(calc(customtransitiontime !== null ? (customtransitiontime-1.0) : 1.0),
+				playsound(auto, '%CURRENTXML%/include/res/move.mp3');
+			); -->
+		);
+
+		delete(global.customtransition);
+		delete(global.customtransitiontime);
+	</action>
+
+
+	<action name="webvr_lookto" scope="local" args="h, v, time, tweentype, donecall">
+		adjusthlookat(get(h));
+		tween(view.hlookat|view.vlookat|webvr.hlookatoffset, calc(h+'|'+v+'|'+(webvr.hlookatoffset+h-view.hlookat)), get(time), get(tweentype), get(donecall) );
+	</action>
+
+
+    <action name="transition" >
+		set(customtransitiontime, 4.0);
+		set(customtransition,
+			webvr_lookto(%4, 0.0, 2.0, easeinsine);
+			tween(view.tx|view.ty|view.tz, calc(%1 + '|' + %2 + '|' + %3), 2.0, easeinsine,
+				tween(view.tx|view.ty|view.tz, calc(image.ox + '|' + image.oy + '|' + image.oz), 2.0, easeinoutsine);
+			);
+		);
+		tour_loadscene(%5);
+	</action>
+
+
+
+  		<!-- setup stuff -->
+	<events name="tourevents" keep="true" onxmlcomplete="setup_first_scene();" />
+
+	<action name="setup_first_scene" scope="local">
+		set(view, tx=get(image.ox), ty=get(image.oy), tz=get(image.oz));
+		set(events[tourevents].onxmlcomplete, null);
+		set(events[tourevents].onloadcomplete,
+			set(events[tourevents].onloadcomplete, moveto_scene_center() );
+		 );
+	</action>
+
+
+  	<!--
+		A little custom helper tool for finding hotspot- and viewpoint-positions.
+	-->
+
+	<action name="editor_help"  scope="local" autorun="onstart">
+		<!-- add a textfield that shows the current viewing position -->
+		delayedcall(1,if(editor EQ 1,
+		addlayer(auto, l);
+		set(l, keep=true, type=text, align=righttop, x=5, y=60, css='font-family:monospace;');
+		copy(v, global.view);
+		renderloop(
+			calc(l.html,
+				'[u]view[/u][br]'+
+				'hlookat='+roundval(v.hlookat,1)+'[br]'+
+				'vlookat='+roundval(v.vlookat,1)+'[br]'+
+				'fov='+roundval(v.fov,1)+'[br]'+
+				'tx='+roundval(v.tx,1)+'[br]'+
+				'ty='+roundval(v.ty,1)+'[br]'+
+				'tz='+roundval(v.tz,1)+'[br]'+
+				'');
+		);
+
+		<!-- add buttons for adding info and text spots -->
+		addlayer(auto, addinfospot);
+		set(addinfospot, keep=true, type=text, align=righttop, x=5 ,y=195, html='add infospot', css='font-family:monospace;', onclick='addinfospot()');
+
+		addlayer(auto, addinfotext);
+		set(addinfotext, keep=true, type=text, align=righttop, x=5,interactivecontent=true ,y=220, html='add infotext', css='font-family:monospace;', onclick='addinfotext()');
+
+		addlayer(auto, removespots);
+		set(removespots, keep=true, type=text, align=righttop, x=5 ,y=245, html='remove all', css='font-family:monospace;', onclick='removeallspots()');
+		);
+
+		);
+	</action>
+
+
+	<action name="addinfospot"  scope="local">
+		addhotspot(auto, h);
+		h.loadstyle(infospot);
+		set(d, 150);
+		set(h,
+			tx=calc(view.tx + d*view.dir.x),
+			ty=calc(view.ty + d*view.dir.y),
+			tz=calc(view.tz + d*view.dir.z),
+			ath=get(view.hlookat),
+			atv=get(view.vlookat),
+			alpha=0.5,
+			zorder=100,
+			onover='tween(scale,0.2); tween(alpha,0.5); copy(overspot,name);',
+			onout='delayedcall(0.1, set(global.overspot,null); );',
+			ondown='dragspot();',
+			onclick='showspotinfos();'
+			);
+	</action>
+
+
+	<action name="addinfotext" scope="local">
+		jsget(infotext, prompt('输入要插入的文字，换行请插入[br]', '请输入您需要显示的文字') );
+		addhotspot(auto, h);
+		h.loadstyle(infospottext);
+		set(d, 150);
+		set(h,
+			tx=calc(view.tx + d*view.dir.x),
+			ty=calc(view.ty + d*view.dir.y),
+			tz=calc(view.tz + d*view.dir.z),
+			ath=get(view.hlookat),
+			atv=get(view.vlookat),
+			html=get(infotext),
+			alpha=1.0,
+			zorder=99,
+			enabled=true,
+			onover='copy(overspot,name);',
+			onout='delayedcall(0.1, set(global.overspot,null); );',
+			ondown='dragspot();',
+			onclick='showspotinfos();'
+			);
+	</action>
+
+
+	<action name="removeallspots" scope="local">
+		for(set(i,0), i LT hotspot.count, inc(i),
+			if(hotspot[get(i)].style == 'infospot' || hotspot[get(i)].style == 'infospottext',
+				removehotspot(get(i));
+				dec(i);
+			);
+		);
+	</action>
+
+
+	<!-- drag the spots somehow around (simplified, not 1:1 mapped to mouse movement) -->
+	<action name="dragspot" scope="local">
+		copy(start_mx, mouse.x);
+		copy(start_my, mouse.y);
+		copy(start_tx, caller.tx);
+		copy(start_ty, caller.ty);
+		copy(start_tz, caller.tz);
+		asyncloop(caller.pressed,
+			calc(dx, (mouse.x - start_mx) * 0.1);
+			calc(dy, (mouse.y - start_my) * 0.1);
+			calc(caller.tx, start_tx + view.dir.z * dx);
+			calc(caller.tz, start_tz - view.dir.x * dx);
+			calc(caller.ty, start_ty + dy);
+			callwith(caller, showspotinfos(); );
+		);
+	</action>
+
+
+	<!-- when dragging a spot or clicking on it, show its current position -->
+	<action name="showspotinfos" scope="local">
+		addlayer('showspotinfos', l);
+		set(l, keep=true, type=text, align=righttop, x=5, y=275,interactivecontent=true, css='font-family:monospace;');
+		calc(l.html,
+			'[u]'+caller.style+'[/u][br]'+
+			'tx='+roundval(caller.tx,2)+'[br]'+
+			'ty='+roundval(caller.ty,2)+'[br]'+
+			'tz='+roundval(caller.tz,2)+'[br]'+
+			'ath='+roundval(caller.ath,2)+'[br]'+
+			'atv='+roundval(caller.atv,2)+'[br]'+
+			'');
+	</action>
+
+
+	<!-- when hovering a spot, add a contextmenu item for deleting it -->
+	<!-- <events name="editor_events" keep="true" oncontextmenu="editor_oncontextmenu_event();" />
+
+	<action name="editor_oncontextmenu_event" scope="local">
+		if(global.overspot !== null,
+			contextmenu.item.insertarrayitem(delspot,0);
+			set(contextmenu.item[delspot].caption, '[span style=[dq]font-weight:bold;[dq]]Editor: Delete Spot[/pan]');
+			set(contextmenu.item[delspot].separator, both);
+			set(contextmenu.item[delspot].onclick, calc('removehotspot(' + overspot + ');set(overspot,null);') );
+		  ,
+			contextmenu.item.removearrayitem(delspot);
+		);
+	</action> -->
+
+
+</krpano>

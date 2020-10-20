@@ -1,0 +1,25 @@
+<krpano>
+  <display depthmaprendermode="3dmodel" />
+  <!-- <display depthmaprendermode="depthmap" /> -->
+  <!-- depthmaprendermode:
+	 - "depthmap" (default)
+		 - generates an internal 24bit depthmap image
+		 - fastest to load
+		 - no "holes", everything is "connected/filled"
+		 - not perfectly accurate
+	 - "3dmodel"
+		 - uses the 3d model and maps the pano onto it
+		 - slower because the 3d model internally needs to get sub-divided into many small triangles
+-->
+  <!-- SYSTEM FOR HAVING ALL HOTSPOTS FROM EVERY PANORAMA -->
+  <style name="everpano3d_0" panoname="school" prealign="0|0|0" ox="0.000" oy="0" oz="0.000" linkedscene="scene0" />
+  <!-- SCENES -->
+  <!-- school -->
+  <scene name="scene0" title="school" alt="130" thumburl="panos\school\0.tiles\snapshot.jpg" autoload="true" onstart="delayedcall(1.5, js('handlerRightTalk()'));delayedcall(3.5, js('handlerLeftTalk()'));delayedcall(4, copy(hotspot[weibo_phone].visible, true));">
+    <view hlookat="0" vlookat="0" fov="120.00"  fovtype="MFOV" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+    <preview url="panos\school\0.tiles\preview.jpg" />
+    <image style="everpano3D_0" >
+      <cube url="panos\school\0.tiles\%s\l%l\%v\l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+    </image>
+  </scene>
+</krpano>

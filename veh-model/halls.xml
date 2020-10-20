@@ -1,0 +1,12 @@
+<krpano hallserver="https://jcdn.xhby.net/project/veh/halls">
+    <hall name="hall00" hallindex="0" title="序厅" thumburl="%$hallserver%/hall00.jpg?v=4"></hall>
+    <hall name="hall01" hallindex="1" title="1号馆" thumburl="%$hallserver%/hall01.jpg?v=4"></hall>
+    <hall name="hall02" hallindex="2" title="2号馆" thumburl="%$hallserver%/hall02.jpg?v=4"></hall>
+    <hall name="hall03" hallindex="3" title="3号馆" thumburl="%$hallserver%/hall03.jpg?v=4"></hall>
+    <hall name="hall04" hallindex="4" title="4号馆" thumburl="%$hallserver%/hall04.jpg?v=4"></hall>
+    <hall name="hall05" hallindex="5" title="5号馆" thumburl="%$hallserver%/hall05.jpg?v=4"></hall>
+    <hall name="hall06" hallindex="6" title="6号馆" thumburl="%$hallserver%/hall06.jpg?v=4"></hall>
+    <hall name="hall07" hallindex="7" title="7号馆" thumburl="%$hallserver%/hall07.jpg?v=4"></hall>
+    <hall name="hall08" hallindex="8" title="8号馆" thumburl="%$hallserver%/hall08.jpg?v=4"></hall>
+    <hall name="hall09" hallindex="9" title="9号馆" thumburl="%$hallserver%/hall09.jpg?v=4"></hall>
+</krpano>

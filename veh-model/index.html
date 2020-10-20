@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>江苏紫金云美术馆</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="x-ua-compatible" content="IE=edge" />
+
+    <meta name="screen-orientation" content="portrait" />
+    <meta name="x5-orientation" content="portrait" />
+    <meta name="full-screen" content="yes" />
+    <meta name="x5-fullscreen" content="true" />
+
+    <link
+      rel="shortcut icon"
+      href="./view/image/share.png"
+      type="image/x-icon"
+    />
+
+    <link rel="stylesheet" href="./view/css/index.css?v=4" />
+    <script src="./view/js/jq.js"></script>
+    <script src="./view/js/jweixin-1.2.0.js"></script>
+    <style>
+      #pano {
+        display: none;
+      }
+
+      #henpin-img {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 9999999;
+        width: 100vw;
+        height: 100vh;
+        display: none;
+      }
+
+      #title-text-container {
+        display: none;
+      }
+
+      #hero-bt-contaienr {
+        position: fixed;
+        left: 1.2rem;
+        top: 1.2rem;
+        width: 90px;
+        height: 36px;
+        padding-right: 10px;
+        border-radius: 18px;
+        background-color: white;
+        z-index: 10;
+        display: flex;
+        overflow: hidden;
+        display: none;
+        cursor: pointer;
+      }
+
+      .hero-img {
+        height: 100%;
+        border-radius: 18px;
+        flex-shrink: 0;
+      }
+
+      .hero-text {
+        color: rgba(51, 51, 51, 1);
+        line-height: 38px;
+        text-align: center;
+        font-size: 0.9rem;
+        flex: 1;
+      }
+
+      #hero-wrapper {
+        display: none;
+      }
+
+      #hero-container {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 20;
+        padding: 1rem 0.5rem 0.5rem 2rem;
+        display: flex;
+        overflow: hidden;
+        flex-direction: column;
+        background: url("./view/image/hero-bg.png");
+        background-size: 100% 100%;
+        background-color: white;
+      }
+
+      .hero-title {
+        font-size: 1.2rem;
+        color: rgba(51, 51, 51, 1);
+        width: 100%;
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+
+      .hero-foot {
+        font-size: 0.75rem;
+        color: rgba(153, 153, 153, 1);
+        width: 100%;
+        text-align: center;
+        margin-top: 1rem;
+      }
+
+      .hero-content-container {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+      }
+
+      #hero-content {
+        flex: 1;
+        overflow: auto;
+        padding-right: 1.5rem;
+      }
+
+      #hero-content::-webkit-scrollbar {
+        width: 8px;
+        background: transparent;
+      }
+
+      #hero-content::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 10px;
+      }
+
+      #quick-nav-bar {
+        width: 1rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        color: blue;
+      }
+
+      .quick-cell {
+        line-height: 1rem;
+        cursor: pointer;
+      }
+
+      .one-hero {
+        display: flex;
+        justify-content: space-between;
+        color: rgba(51, 51, 51, 1);
+        line-height: 2rem;
+      }
+
+      .one-hero p:first-child {
+        width: 105px;
+        margin-right: 5px;
+      }
+
+      .one-hero p:last-child {
+        flex: 1;
+        overflow: hidden;
+      }
+
+      #hero-close-icon {
+        position: absolute;
+        right: 1.2rem;
+        top: 1.4rem;
+        z-index: 20;
+        width: 1.2rem;
+        cursor: pointer;
+      }
+
+      @media screen and (min-width: 900px) {
+        #hero-container {
+          position: fixed;
+          left: calc(50vw - 235px) !important;
+          right: calc(50vw - 235px) !important;
+          top: calc(50vh - 300px) !important;
+          bottom: calc(50vh - 300px) !important;
+          border-radius: 8px !important;
+        }
+
+        #hero-wrapper {
+          position: fixed;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+        }
+
+        #hero-content::-webkit-scrollbar {
+          width: 8px;
+          background: transparent;
+        }
+
+        #hero-content::-webkit-scrollbar-thumb {
+          background: #c1c1c1;
+          border-radius: 10px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="krpano.js"></script>
+    <div id="pano" style="width: 100%; height: 100%; display: none;">
+      <noscript>
+        <table style="width: 100%; height: 100%;">
+          <tr style="vertical-align: middle; text-align: center;">
+            <td>ERROR:<br /><br />Javascript not activated<br /><br /></td>
+          </tr>
+        </table>
+      </noscript>
+    </div>
+
+    <div id="pano3000" style="width: 100%; height: 100%; display: none;">
+      <noscript>
+        <table style="width: 100%; height: 100%;">
+          <tr style="vertical-align: middle; text-align: center;">
+            <td>ERROR:<br /><br />Javascript not activated<br /><br /></td>
+          </tr>
+        </table>
+      </noscript>
+    </div>
+
+    <div id="welcome-container">
+      <div id="small-logo-container">
+        <img src="./view/image/logo2.png" alt="" class="logo2" />
+        <img src="./view/image/whitelogo.png" alt="" class="logo1" />
+      </div>
+      <div id="title-text-container">
+        <img src="./view/image/titletext.png" alt="" id="title-text-img" />
+      </div>
+      <div id="enter-bt-container" onclick="enterPrefaceHall()">进入展馆</div>
+      <div id="loading-icon-container">
+        <img src="./view/image/icons/loading2.svg" id="loading-icon" alt="" />
+        <span id="loading-text"> &nbsp;&nbsp;加载中... </span>
+      </div>
+    </div>
+
+    <div id="mob-works-container">
+      <iframe id="mob-works-iframe" src="" frameborder="0"></iframe>
+    </div>
+
+    <img src="./view/image/hengping.jpg" alt="" id="henpin-img" />
+
+    <div id="hero-bt-contaienr" onclick="openHeroFrame()">
+      <!-- TODO 来点动画 -->
+      <img src="./view/image/hero-head.png" alt="" class="hero-img" />
+      <div class="hero-text">英雄榜</div>
+    </div>
+
+    <div id="hero-wrapper">
+      <div id="hero-container">
+        <img
+          src="./view/image/icons/mob-close.png"
+          alt=""
+          id="hero-close-icon"
+          onclick="closeHeroFrame()"
+        />
+        <div class="hero-title">江苏省援鄂医务人员名单</div>
+        <div class="hero-content-container">
+          <div id="hero-content"></div>
+          <div id="quick-nav-bar"></div>
+        </div>
+
+        <div class="hero-foot">以上排名按照姓氏首字母排序</div>
+      </div>
+    </div>
+
+    <div id="lobby-container">
+      <div class="card card-go-left" onclick="enterExhibition(0)">
+        序厅
+      </div>
+      <div class="card card-go-right" onclick="enterExhibition(10)">
+        主厅
+      </div>
+      <img
+        src="./view/image/lobby/arrow.png"
+        alt=""
+        class="arrow-left arrows"
+      />
+      <img
+        src="./view/image/lobby/arrow2.png"
+        alt=""
+        class="arrow-right arrows"
+      />
+
+      <div class="arrow-loading-container arrow-left-container">
+        <img
+          src="./view/image/icons/loading2.svg"
+          alt=""
+          class="lobby-container-loading-icon"
+        />
+      </div>
+
+      <div class="arrow-loading-container arrow-right-container">
+        <img
+          src="./view/image/icons/loading2.svg"
+          alt=""
+          class="lobby-container-loading-icon"
+        />
+      </div>
+    </div>
+  </body>
+
+  <script>
+    let krpano = null;
+    let krpano70 = null; // 70幅的krpano对象
+    let krpan3000 = null; // 3000幅的krpano对象
+    let isKrpano70OK = false; // 70幅是否加载完成
+    let isKrpano3000OK = false; // 3000幅是否加载完成
+
+    let version = "@VERSION 1.2.3";
+
+    let baseUrl = "";
+    let welcomeMsg = "";
+
+    let heros = []; // 英雄列表
+
+    $(document).ready(function () {
+      if (window.innerWidth < 900) {
+        handleMobHenpin();
+      }
+      $.getJSON("./config.json", function (resJson) {
+        baseUrl = resJson.baseUrl;
+        registerWx();
+      });
+    });
+
+    function load70() {
+      embedpano({
+        xml: "main.xml?v=4",
+        target: "pano",
+        id: "panoId70",
+        bgcolor: "#000000",
+        html5: "webgl+only",
+        mobilescale: 1.0,
+        consolelog: false,
+        passQueryParameters: true,
+        onready: function (jsapi) {
+          krpano70 = jsapi;
+          window.krpano70 = jsapi.get("global");
+          krpano70.set("events[loadtext].keep", "true");
+          krpano70.set(
+            "events[loadtext].onloadcomplete",
+            "js('loadingEnd(70)'); set(events[loadtext].onloadcomplete,null); skin_setup_littleplanetintro();"
+          );
+        },
+      });
+    }
+
+    function load3000() {
+      embedpano({
+        xml: "ten/main.xml?v=4",
+        target: "pano3000",
+        id: "panoId3000",
+        bgcolor: "#000000",
+        html5: "webgl+only",
+        mobilescale: 1.0,
+        consolelog: true,
+        passQueryParameters: true,
+        onready: function (jsapi) {
+          krpan3000 = jsapi;
+          window.krpan3000 = jsapi.get("global");
+          krpan3000.set("events[loadtext].keep", "true");
+          krpan3000.set(
+            "events[loadtext].onloadcomplete",
+            "js('loadingEnd(3000)'); set(events[loadtext].onloadcomplete,null); skin_setup_littleplanetintro();"
+          );
+        },
+      });
+    }
+
+    load70();
+    load3000();
+
+    function registerWx() {
+      // 微信相关
+      let url = window.location.href;
+      let obj = { url };
+      $.ajax({
+        url: baseUrl + `/works/wx/signature`,
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        dataType: "JSON",
+        data: JSON.stringify(obj),
+        success: function (res) {
+          if (res.code !== 200) return;
+          wx.config({
+            debug: false,
+            appId: res.data.appid,
+            timestamp: res.data.timestamp,
+            nonceStr: res.data.nonceStr,
+            signature: res.data.signature,
+            jsApiList: ["onMenuShareTimeline", "onMenuShareAppMessage"],
+          });
+        },
+      });
+      wx.ready(() => {
+        let wxData = {
+          title: "江苏紫金云美术馆开馆 “致敬江苏援鄂白衣勇士”书画云展上线",
+          desc:
+            "省书画艺术家首批创作的70幅书画作品网络首展于本馆，线下同步捐赠给参与湖北战疫和省内定点医疗救治任务的七家医院。现邀君同赏，愿人间共安。",
+          link: url,
+          imgUrl:
+            location.protocol + "//" + location.host + "/view/image/share.png",
+        };
+        wx.onMenuShareAppMessage(wxData);
+        wx.onMenuShareTimeline(wxData);
+      });
+    }
+
+    function getPersonTimes() {
+      var showVersion = true;
+      var name = "";
+      switch (parseInt(window.hallNumber)) {
+        case 0:
+          name = "序厅";
+          break;
+        case 1:
+          name = "1号馆";
+          break;
+        case 2:
+          name = "2号馆";
+          break;
+        case 3:
+          name = "3号馆";
+          break;
+        case 4:
+          name = "4号馆";
+          break;
+        case 5:
+          name = "5号馆";
+          break;
+        case 6:
+          name = "6号馆";
+          break;
+        case 7:
+          name = "7号馆";
+          break;
+        case 8:
+          name = "8号馆";
+          break;
+        case 9:
+          name = "9号馆";
+          break;
+        case 9:
+          name = "10号馆";
+          break;
+      }
+      $.ajax({
+        url: baseUrl + `/visitor/times`,
+        type: "GET",
+        contentType: "application/json; charset=utf-8",
+        dataType: "JSON",
+        success: function (dataJson) {
+          var num = dataJson.data * 3 + 18000;
+          welcomeMsg = name + "欢迎第 " + num + " 位观展人";
+          krpano.call("set(layer[person_times].html, " + welcomeMsg + ");");
+          krpano.call("set(layer[version_num].html, " + version + ");");
+          getHallName();
+        },
+      });
+    }
+
+    function getHallName() {
+      var hallName = "";
+      if (window.hallNumber == 0) {
+        hallName = "序厅";
+      } else if (window.hallNumber == 1) {
+        hallName = "1号馆";
+      } else if (window.hallNumber == 2) {
+        hallName = "2号馆";
+      } else if (window.hallNumber == 3) {
+        hallName = "3号馆";
+      } else if (window.hallNumber == 4) {
+        hallName = "4号馆";
+      } else if (window.hallNumber == 5) {
+        hallName = "5号馆";
+      } else if (window.hallNumber == 6) {
+        hallName = "6号馆";
+      } else if (window.hallNumber == 7) {
+        hallName = "7号馆";
+      } else if (window.hallNumber == 8) {
+        hallName = "8号馆";
+      } else if (window.hallNumber == 9) {
+        hallName = "9号馆";
+      } else if (window.hallNumber == 10) {
+        hallName = "10号馆";
+      }
+      krpano.call("set(layer[hall_name].html," + hallName + ");");
+    }
+
+    function enterPrefaceHall() {
+      // 进入序厅
+      $("#welcome-container").remove();
+      $("#lobby-container").show();
+    }
+
+    function enterModel(number) {
+      // 进入模型
+      // active_spot 传参 0 - 10 10个厅
+      // 选择是哪个krpano对象
+      if (number === 0) {
+        $("#pano").show();
+        krpano = krpano70;
+        window.krpano = window.krpano70;
+        removepano("panoId3000");
+        $("#pano3000").remove();
+        krpan3000 = null;
+        window.krpan3000 = null;
+      }
+      if (number === 10) {
+        $("#pano3000").show();
+        krpano = krpan3000;
+        window.krpano = window.krpan3000;
+        removepano("panoId70");
+        $("#pano").remove();
+        krpano70 = null;
+        window.krpano70 = null;
+      }
+
+      window.hallNumber = number;
+
+      getPersonTimes();
+      krpano.call(`active_spot(${number});start_music();`);
+      krpano.call("reset_view();");
+
+      // 关闭欢迎页时,显示英雄榜
+      $("#hero-bt-contaienr").css("display", "flex");
+      // 在这里初始化
+      // fillFakeHeros();
+      getHeros();
+      fillQuickJump();
+    }
+
+    function handleMobHenpin() {
+      if (window.orientation == 90 || window.orientation == -90) {
+        $("#henpin-img").show();
+      }
+
+      window.onorientationchange = function () {
+        if (window.orientation == 90 || window.orientation == -90) {
+          // alert('横屏了');
+          $("#henpin-img").show();
+        } else {
+          // alert('没有横屏');
+          $("#henpin-img").hide();
+        }
+      };
+    }
+
+    function loadingEnd(number) {
+      if (number === "3000") {
+        isKrpano3000OK = true;
+      }
+      if (number === "70") {
+        isKrpano70OK = true;
+      }
+
+      if (isKrpano70OK && isKrpano3000OK) {
+        $("#loading-icon-container").hide();
+        $("#enter-bt-container").show();
+      }
+    }
+
+    function closeMobIframe(origin) {
+      // 展示英雄榜
+      $("#hero-bt-contaienr").css("display", "flex");
+
+      krpano.call("close_pop();");
+      krpano.call("skin_showskin();");
+      krpano.call("set(layer[person_times].html, " + welcomeMsg + ");");
+      // krpano.call("set(search_open, false)");
+      // krpano.call("set(view_open, false);");
+      // krpano.call("set(comment_open, false)");
+      // krpano.call("set(layer[skin_btn_search].crop, '0|80|80|80')");
+      // krpano.call("set(layer[skin_btn_mini].crop, '160|80|80|80')");
+      // krpano.call("set(layer[skin_btn_comment].crop, '240|80|80|80')");
+    }
+
+    function handleNav(origin) {
+      // 点击下方导航栏时,似乎稳定触发此函数  隐藏英雄榜
+      if (origin !== "map") {
+        $("#hero-bt-contaienr").hide();
+      }
+
+      krpano.call("skin_hideskin();");
+      krpano.call("set(layer[person_times].html, " + "" + ");");
+    }
+
+    function showWorksDetailMob(id) {
+      $("#mob-works-iframe").attr("src", `view/pages/detail-mob.html?id=${id}`);
+      // $("#pano").hide();
+      $("#mob-works-container").show();
+    }
+
+    function hideWorksDetailMob() {
+      $("#mob-works-iframe").attr("src", ``);
+      // $("#pano").show();
+      $("#mob-works-container").hide();
+      closeMobIframe();
+    }
+
+    function _handleSearch(worksId) {
+      closeMobIframe();
+      krpano.call(
+        "popup('model', './view/pages/detail-nav.html?id=" +
+          worksId +
+          "', 1800, 700, true);"
+      );
+    }
+
+    function fillFakeHeros() {
+      $(".one-hero").remove();
+      let container = $("#hero-content");
+      for (let i = 0; i < 3000; i++) {
+        let tem = `
+      <div class="one-hero">
+        <p>${i + 1}、安华</p>
+        <p>无锡市锡山人民医院</p>
+      </div>
+      `;
+        container.append(tem);
+      }
+    }
+
+    function getHeros() {
+      $.getJSON(`${baseUrl}/works/doctors`, function (resJson) {
+        // console.log("resJson", resJson);
+        let container = $("#hero-content");
+        if (resJson.code !== 200) return;
+        heros = resJson.data;
+        heros.forEach((d, i) => {
+          let tem = `
+      <div class="one-hero">
+        <p>${i + 1}、${d.name}</p>
+        <p>${d.hospital}</p>
+      </div>
+      `;
+          container.append(tem);
+        });
+      });
+    }
+
+    function fillQuickJump() {
+      let quickTextList = [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T",
+        "U",
+        "V",
+        "W",
+        "X",
+        "Y",
+        "Z",
+      ];
+      let container = $("#quick-nav-bar");
+      quickTextList.forEach((text) => {
+        container.append("<p class='quick-cell'>" + text + "</p>");
+      });
+
+      $(".quick-cell").on("click", function () {
+        // 先点击 TODO 优化成触摸
+        let letter = quickTextList[$(this).index()];
+        let firstIndex = heros.findIndex((hero) => hero.nameInitial === letter);
+        if (firstIndex === -1) return;
+        // 行高32;
+        let scrollTop = firstIndex * 32;
+        $("#hero-content").scrollTop(scrollTop);
+      });
+    }
+
+    function openHeroFrame() {
+      $("#hero-wrapper").show();
+    }
+
+    function closeHeroFrame() {
+      $("#hero-wrapper").hide();
+    }
+
+    function enterExhibition(number) {
+      // number: 0 - 10 十个厅
+      $("#lobby-container").hide();
+
+      enterModel(number);
+    }
+  </script>
+</html>

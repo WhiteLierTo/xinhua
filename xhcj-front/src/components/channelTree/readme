@@ -1,0 +1,9 @@
+- props
+    - onSelect: 当点击选项时触发
+        - 入参: 被选中行对象
+
+    - onTabChange: 当切换标签卡时触发
+        - 入参:
+            1. 当前被选中的tab名称 "normal" | "special"
+            2. 被选中行对象
+                - tip: 需要通过`obj.type` 判断被选中行是否为当前tab下

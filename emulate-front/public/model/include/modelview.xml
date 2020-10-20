@@ -1,0 +1,49 @@
+<krpano info="everpano中文网,everpano.net制作">
+  
+    <style name="button" type="text" css="text-align:center;" padding="4 8" keep="true" mergedalpha="false" bgborder="0 0xFFFFFF 1" bgroundedge="1" bgshadow="0 1 4 0x000000 1.0" ondown="set(bgcolor, 0xDDDDDD);" onup="set(bgcolor, 0xFFFFFF);" />
+  
+  
+    <events keep="true" onkeydown="if(keycode EQ 32,if(mo EQ 1,resetview,dollhouse_view);)"></events>
+  
+  
+		<!-- setup stuff -->
+	<events name="tourevents" keep="true" onxmlcomplete="setup_first_scene();" />
+
+	<action name="setup_first_scene" scope="local">
+		set(view, tx=get(image.ox), ty=get(image.oy), tz=get(image.oz));
+		set(events[tourevents].onxmlcomplete, null);
+		set(events[tourevents].onloadcomplete,
+			set(events[tourevents].onloadcomplete, moveto_scene_center() );
+		 );
+	</action>
+  
+  	<action name="dollhouse_view">
+		lookto(270,50,180,default,true,true);
+		tween(view.oz|view.tx|view.ty|view.tz,calc(''+1200+'|'+image.ox+'|'+image.oy+'|'+image.oz));
+		set(control.invert,true);set(mo,1);
+	</action>
+
+	<action name="dollhouse_off">
+		tween(view.oz, 0.0, 2.0);
+		set(control.invert,false);
+		
+	</action>
+  
+  	<action name="resetview">
+		set(control.invert,false);
+		tween(view.tx|view.ty|view.tz|view.ox|view.oy|view.oz|view.fisheye,
+			calc(''+image.ox+'|'+image.oy+'|'+image.oz+'|0|0|0|0'),
+			0.5,
+			default
+		);
+		set(mo,0);
+	</action>
+	
+  
+    <layer name="dollhouse" style="button" html="3D模型"  width="80" align="bottom" x="-45" y="20" onclick="dollhouse_view();" />
+	<layer name="resetview" style="button" html="全景视角" width="80" align="bottom" x="45" y="20" onclick="resetview();" />
+
+  
+  
+  
+</krpano>

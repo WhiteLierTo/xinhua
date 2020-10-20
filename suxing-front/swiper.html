@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Swiper demo</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"
+    />
+
+    <!-- Link Swiper's CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.1/css/swiper.min.css"
+    />
+
+    <!-- Demo styles -->
+    <style>
+      html,
+      body {
+        position: relative;
+        height: 100%;
+      }
+      ul,
+      li {
+        list-style-type: none;
+      }
+
+      body {
+        background: transparent;
+        font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        color: #000;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        background: rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .swiper-container {
+        width: 2400px;
+        height: 900px;
+        background-image: url("./img/swiper-left-bg.png");
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        float: left;
+        margin: 25px 50px 25px 100px;
+      }
+      .swiper-slide {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .swiper-left-img img {
+        width: 1550px;
+        height: 700px;
+      }
+      .swiper-right-img {
+        width: 2400px;
+        height: 900px;
+        background-image: url("./img/swiper-left-bg.png");
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        float: left;
+        margin: 25px 100px 25px 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #scrollBox {
+        width: 2338px;
+        height: 2075px;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #ffffff;
+      }
+      .title {
+        text-align: center;
+        font-size: 70px;
+        font-weight: bold;
+      }
+      .swiper-right-img li {
+        padding: 10px;
+        font-size: 48px;
+      }
+
+      .swiper-button-next {
+        right: 170px !important;
+        width: 120px;
+        height: 120px;
+        background-color: #333;
+        border-radius: 50%;
+      }
+
+      .swiper-button-next::after {
+        font-size: 60px;
+        color: #fff;
+      }
+      .swiper-button-prev {
+        left: 200px !important;
+        width: 120px;
+        height: 120px;
+        background-color: #333;
+        border-radius: 50%;
+      }
+      .swiper-button-prev::after {
+        font-size: 60px;
+        color: #fff;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Swiper -->
+    <div class="container">
+      <div class="swiper-container">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide">
+            <div class="swiper-left-img">
+              <img src="./img/honor8.jpg" alt="" />
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="swiper-left-img">
+              <img src="./img/honor1.jpg" alt="" />
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="swiper-left-img">
+              <img src="./img/honor2.jpg" alt="" />
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="swiper-left-img">
+              <img src="./img/honor3.jpg" alt="" />
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="swiper-left-img">
+              <img src="./img/honor4.jpg" alt="" />
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="swiper-left-img">
+              <img src="./img/honor5.jpg" alt="" />
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="swiper-left-img">
+              <img src="./img/honor6.jpg" alt="" />
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="swiper-left-img">
+              <img src="./img/honor7.jpg" alt="" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Arrows -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+      <div class="swiper-right-img">
+        <div id="scrollBox">
+          <ul id="con1">
+            <div class="title">荣誉墙</div>
+            <li>2017年有功单位</li>
+            <li>2018年有功单位</li>
+            <li>2019年有功单位</li>
+            <li>副会长单位</li>
+            <li>科普教育示范基地</li>
+            <li>科研示范基地</li>
+            <li>无公害产品基地</li>
+            <li>先锋共建基地</li>
+          </ul>
+          <ul id="con2"></ul>
+        </div>
+      </div>
+    </div>
+    <!-- Swiper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.1/js/swiper.min.js"></script>
+
+    <!-- Initialize Swiper -->
+    <script>
+      var swiper = new Swiper(".swiper-container", {
+        loop: true, // 循环模式选项
+        autoplay: true,
+        slidesPerView: "auto",
+        width: 1760,
+        height: 1494,
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+<krpano>
+  
+	<plugin name="soundinterface" url.html5="%VIEWER%/plugins/soundinterface.js" keep="true"
+		onloaded="playsound(bg_sound, '%CURRENTXML%/res/bg.mp3', true, 1);"
+	/>
+
+	<layer name="toggle_sound" keep="true"
+		parent="tour_ui"
+		url="%CURRENTXML%/res/icon_sound.png"
+		align="rightop" x="60" y="60" alpha="0.3" scale="1" onover="tween(alpha,1.0);" onout="tween(alpha,0.3);"
+		ondown.touch="onover();"
+		onup.touch="onout();"
+		crop="0|0|64|64"
+		onclick="if(sound[bg_sound], pausesoundtoggle(bg_sound); switch(crop, 0|0|64|64, 0|64|64|64); );"
+		/>
+</krpano>

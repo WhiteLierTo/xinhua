@@ -1,0 +1,181 @@
+{
+	"pages": [{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "江苏省教育厅",
+				"disableScroll": true
+			}
+		},
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "工作台",
+				"disableScroll": true
+			}
+		},
+
+
+		{
+			"path": "pages/index/overView/overView",
+			"style": {
+				"navigationBarTitleText": "舆情概览",
+				"disableScroll": true
+			}
+		},
+		{
+			"path": "pages/index/overView/statistics",
+			"style": {
+				"navigationBarTitleText": "舆情统计"
+			}
+		}, {
+			"path": "pages/index/overView/trend",
+			"style": {
+				"navigationBarTitleText": "待处理趋势分布"
+			}
+		}, {
+			"path": "pages/index/overView/overDue",
+			"style": {
+				"navigationBarTitleText": "已超期任务"
+			}
+		}, {
+			"path": "pages/index/overView/willOverDue",
+			"style": {
+				"navigationBarTitleText": "即将超期任务"
+			}
+		},
+		{
+			"path": "pages/warn/warn",
+			"style": {
+				"navigationBarTitleText": "流程提醒"
+			}
+		},
+		{
+			"path": "pages/index/newPubSen",
+			"style": {
+				"navigationBarTitleText": "舆情新增",
+				"disableScroll": true
+			}
+		},
+		{
+			"path": "pages/index/drafts",
+			"style": {
+				"navigationBarTitleText": "草稿箱"
+			}
+		},
+		{
+			"path": "pages/index/draftsDetail",
+			"style": {
+				"navigationBarTitleText": "草稿箱明细",
+				"disableScroll": true
+
+			}
+		},
+		{
+			"path": "pages/pending/pending",
+			"style": {
+				"navigationBarTitleText": "待处理"
+			}
+		},
+
+		{
+			"path": "pages/pending/pedingDetail",
+			"style": {
+				"navigationBarTitleText": "待处理明细",
+				"app-plus": {  //uni-app项目对应节点名称为"app-plus"
+					 "titleNView": {  
+						 "autoBackButton":true
+						 }	
+				  }
+			}
+		},
+		// 文章内容
+		{
+			"path": "pages/pending/articleContent",
+			"style": {
+				"navigationBarTitleText": "文章内容"
+			}
+		},
+		{
+			"path": "pages/retrieval/retrieval",
+			"style": {
+				"navigationBarTitleText": "舆情检索"
+			}
+		},
+		{
+			"path": "pages/mine/mine",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
+		},
+		{
+			"path": "pages/processing/processing",
+			"style": {
+				"navigationBarTitleText": "处理中"
+			}
+		},
+		//处理中明细
+		{
+			"path": "pages/processing/processingDetail",
+			"style": {
+				"navigationBarTitleText": "处理中明细"
+			}
+		},
+		//已完结
+		{
+			"path": "pages/ended/ended",
+			"style": {
+				"navigationBarTitleText": "已完结"
+			}
+		},
+		//已完结明细
+		{
+			"path": "pages/ended/endedDetail",
+			"style": {
+				"navigationBarTitleText": "已完结明细"
+			}
+		}, {
+			"path": "pages/leader/leader",
+			"style": {
+				"navigationBarTitleText": "领导批示"
+			}
+		},
+		{
+			"path": "pages/leader/leaderDetail",
+			"style": {
+				"navigationBarTitleText": "领导批示明细"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarBackgroundColor": "#4383E4",
+		"backgroundColor": "#F2F2F2"
+	},
+	"tabBar": {
+		"color": "#666666",
+		"selectedColor": "#4383e4",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [{
+			"pagePath": "pages/index/index",
+			"iconPath": "static/img/footer/home.png",
+			"selectedIconPath": "static/img/footer/home-act.png",
+			"text": "工作台"
+		}, {
+			"pagePath": "pages/retrieval/retrieval",
+			"iconPath": "static/img/footer/jiansuo.png",
+			"selectedIconPath": "static/img/footer/jiansuo-act.png",
+			"text": "舆情检索"
+		}, {
+			"pagePath": "pages/pending/pending",
+			"iconPath": "static/img/footer/pending.png",
+			"selectedIconPath": "static/img/footer/pending-act.png",
+			"text": "待处理"
+		}, {
+			"pagePath": "pages/mine/mine",
+			"iconPath": "static/img/footer/mine.png",
+			"selectedIconPath": "static/img/footer/mine-act.png",
+			"text": "我的"
+		}]
+	}
+}

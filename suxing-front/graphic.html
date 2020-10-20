@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Swiper demo</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"
+    />
+
+    <!-- Demo styles -->
+    <style>
+      html,
+      body {
+        position: relative;
+        height: 100%;
+      }
+      ul,
+      li {
+        list-style-type: none;
+      }
+
+      body {
+        background: transparent;
+        font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        color: #000;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        background: rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .swiper-left-img {
+        width: 2400px;
+        height: 900px;
+        background-image: url("./img/swiper-left-bg.png");
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        float: left;
+        margin: 25px 50px 25px 100px;
+      }
+      .swiper-left-img img {
+        width: 1800px;
+        height: 700px;
+        border-radius: 50px;
+      }
+      .swiper-right-img {
+        width: 2400px;
+        height: 900px;
+        background-image: url("./img/swiper-left-bg.png");
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        float: left;
+        margin: 25px 100px 25px 50px;
+      }
+      #con1 {
+        width: 80%;
+        font-size: 50px;
+        margin: 30px auto 0;
+        line-height: 120px;
+        color: #fff;
+        padding: 25px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Swiper -->
+    <div class="container">
+      <div class="swiper-container">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide">
+            <div class="swiper-left-img">
+              <img src="" id="img" alt="" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="swiper-right-img">
+        <div id="scrollBox">
+          <div id="con1">
+            <h3 id="swiper-title"></h3>
+            <div id="intro"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Initialize Swiper -->
+    <script>
+      window.onload = function () {
+        var url = window.location.href;
+        var type = url.substring(url.indexOf("=") + 1, url.length);
+        var containTitle = document.getElementById("swiper-title");
+        var containIntro = document.getElementById("intro");
+        var containImg = document.getElementById("img");
+        switch (type) {
+          case "1":
+            containTitle.innerHTML = "品名：千禧果(小龙女)";
+            containIntro.innerHTML =
+              "简介：千禧果是近年来农艺师从圣女果品种中优选培育出来的一个新品种，产自海南陵水，个头比圣女果小了一号，但是营养成分一点都不比圣女果差，千禧果是形状较圆，色泽艳丽，呈深红色，单果重约15克，口感甜，不酸皮薄，果汁丰富，口感较圣女果佳。可以理解为千禧果是圣女果的升级版，口感更易被接受。";
+            containImg.src = "./img/qianxi.jpeg";
+            break;
+          case "2":
+            containTitle.innerHTML = "品名：香蕉西葫芦";
+            containIntro.innerHTML =
+              "简介：香蕉西葫芦是一种外形似香蕉，果皮位黄色的西葫芦，是一种美洲南瓜中的一个黄色果皮新品种，以食用嫩果为主，嫩果肉质细嫩，味微甜清香，适于生食，也可妙食或作馅，其茎稍也可做菜食用。";
+            containImg.src = "./img/plant.jpg";
+            break;
+          case "3":
+            containTitle.innerHTML = "品名：紫甘蓝";
+            containIntro.innerHTML =
+              "简介：紫甘蓝又称红甘蓝，赤甘蓝，俗称紫包菜，十字花科，芸苔属甘蓝钟中的一个变种。是结球甘蓝中的一个类型，由于它的外叶和叶球都是呈紫红色，紫甘蓝也叫紫圆白菜，叶片紫红，叶面有蜡粉，叶球近圆形。营养丰富，尤其含有丰富的维生素C、U和较多的维生素E和B族。";
+            containImg.src = "./img/ziganlan.jpg";
+            break;
+          case "4":
+            containTitle.innerHTML = "品名：水果黄瓜(荷兰黄瓜)";
+            containIntro.innerHTML =
+              "简介：荷兰引进的品种，表皮上一般没有刺，而且口味甘甜，主要用来生食。水果黄瓜含有丰富的丙醇二酸，黄瓜酶等活性物质和大量的维生素E,市场上较为畅销的蔬菜水果食用产品。";
+            containImg.src = "./img/huanggua.jpg";
+            break;
+          case "5":
+            containTitle.innerHTML = "品名：木耳菜(豆腐菜)";
+            containIntro.innerHTML =
+              "简介：木耳菜以幼苗、嫩梢或嫩叶供食，质地柔嫩软滑，营养价值高。可作汤菜、爆炒、烫食、凉拌等，其味清香，咀嚼时如吃木耳一般清脆爽口，故名木耳菜。其在南北方普遍栽培，在南方热带地区可多年生栽培，在北方多采用一年生栽培。";
+            containImg.src = "./img/muer.jpg";
+            break;
+          case "6":
+            containTitle.innerHTML = "品名：韭菜(懒人菜、壮阳草、扁菜)";
+            containIntro.innerHTML =
+              "简介：韭菜适应性强，抗寒耐热，全国各地到处都有栽培。具有特殊强烈气味，根茎横卧，叶、花葶和花均作蔬菜食用；种子等可入药，具有补肾、健胃，提神、止汗固涩等功效。在中医里，有人把韭菜称为”洗肠草“。";
+            containImg.src = "./img/jiucai.jpg";
+            break;
+          default:
+            break;
+        }
+      };
+    </script>
+  </body>
+</html>

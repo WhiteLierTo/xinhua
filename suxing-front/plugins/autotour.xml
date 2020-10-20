@@ -1,0 +1,47 @@
+<krpano>
+    <events name="autoTourEvents" keep="true" 
+        onidle="startAutoTour();"
+        onclick="autoTourClickEvent();"
+        onmousedown="autoTourClickEvent();"
+    />
+
+    <action protect="true" name="startAutoTour">
+
+        set(autoTourRuns, true);
+        nextSceneLoop(+1);
+        delayedcall(autotour, 188.0, startAutoTour(););
+
+    </action>
+
+    <action protect="true" name="stopAutoTour">
+
+        stopdelayedcall(autotour);
+        set(autoTourRuns, false);
+
+    </action>   
+
+    <action name="nextSceneLoop" scope="local" args="indexadd">
+        
+        add(newsceneindex, scene[get(xml.scene)].index, indexadd);
+        sub(lastsceneindex, scene.count, 1);
+        if(newsceneindex LT 0, copy(newsceneindex,lastsceneindex));
+        if(newsceneindex GT lastsceneindex, set(newsceneindex,0));
+
+        transition2scene(get(scene[get(newsceneindex)].name),null, MERGE, ZOOMBLEND(1.0, 2.0, easeInOutSine));
+
+    </action>
+
+    <action name="autoTourClickEvent">
+        if(autoTourRuns, stopAutoTour(););
+    </action>
+
+
+    <action name="transition2scene">
+
+        loadscene('%1', null, MERGE|KEEPVIEW|KEEPMOVING, ZOOMBLEND(1.0, 2.0, easeInOutSine));
+        set(events.onkeydown, stoptween(view.tx|view.ty|view.tz);set(events.onkeydown,null); );
+        tween(view.tx|view.ty|view.tz, calc('' + image.ox + '|' + image.oy + '|' + image.oz), 2, default, set(events.onkeydown,null); );
+        
+    </action>
+
+</krpano>

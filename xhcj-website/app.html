@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html {{ HTML_ATTRS }}>
+<link href="./swiper.min.css" type="text/css" rel="stylesheet">
+<link href="./@fortawesome/fontawesome-free/css/all.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" charset="UTF-8" src="//web.cdn.openinstall.io/openinstall.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.3.4/vconsole.min.js"></script>
+
+<head {{ HEAD_ATTRS }}>
+  {{ HEAD }}
+</head>
+
+<script>
+  var isMob = isMoible(navigator.userAgent);
+  if (isMob) {
+    var htmlDom = document.getElementsByTagName("html")[0];
+    htmlDom.style.opacity = 0;
+    htmlDom.style.fontSize = (htmlDom.clientWidth / 3.75) + "px";
+    window.onload = function () {
+      htmlDom.style.transition = "opacity 1.2s";
+      htmlDom.style.opacity = 1;
+    }
+  }
+
+  function isMoible(UA) {
+    return /(Android|webOS|iPhone|iPod|tablet|BlackBerry|Mobile)/i.test(UA) ||  location.href.indexOf('isPreview=1') !== -1;
+  }
+</script>
+
+
+<body {{ BODY_ATTRS }}>
+{{ APP }}
+</body>
+
+
+</html>

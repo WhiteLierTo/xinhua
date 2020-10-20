@@ -1,0 +1,1222 @@
+﻿<krpano version="1.20" editor="0" idletime="188">
+
+	<include url="plugins/music.xml?v=1"/>
+	<include url="plugins/hotspots.xml?v=1"/>
+	<include url="plugins/works.xml?v=1"/>
+	<include url="skin/vtourskin.xml?v=1" />
+	<include url="plugins/popwindow.xml?v=1"/>
+	<include url="plugins/autotour.xml?v=1" />
+
+	<!-- customize skin settings: maps, gyro, webvr, thumbnails, tooltips, layout, design, ... -->
+	<skin_settings maps="true"
+	               maps_type="google"
+	               maps_bing_api_key=""
+	               maps_google_api_key=""
+	               maps_zoombuttons="false"
+	               maps_loadonfirstuse="true"
+	               gyro="true"
+	               gyro_keeplookingdirection="false"
+	               webvr="true"
+	               webvr_keeplookingdirection="true"
+	               webvr_prev_next_hotspots="true"
+	               littleplanetintro="true"
+	               followmousecontrol="false"
+	               title="true"
+	               thumbs="true"
+	               thumbs_width="120" thumbs_height="80" thumbs_padding="10" thumbs_crop="0|40|240|160"
+	               thumbs_opened="true"
+	               thumbs_text="true"
+	               thumbs_dragging="true"
+	               thumbs_onhoverscrolling="false"
+	               thumbs_scrollbuttons="false"
+	               thumbs_scrollindicator="false"
+	               thumbs_loop="false"
+	               tooltips_buttons="false"
+	               tooltips_thumbs="true"
+	               tooltips_hotspots="true"
+	               tooltips_mapspots="false"
+	               deeplinking="false"
+	               loadscene_flags="MERGE"
+	               loadscene_blend="ZOOMBLEND(1.0, 2.0, easeInOutSine)"
+	               loadscene_blend_prev="ZOOMBLEND(1.0, 2.0, easeInOutSine)"
+	               loadscene_blend_next="ZOOMBLEND(1.0, 2.0, easeInOutSine)"
+	               loadingtext="加载中..."
+	               layout_width="100%"
+	               layout_maxwidth="1900"
+	               controlbar_width="-24"
+	               controlbar_height="40"
+	               controlbar_offset="20"
+	               controlbar_offset_closed="-40"
+	               controlbar_overlap.no-fractionalscaling="10"
+	               controlbar_overlap.fractionalscaling="0"
+	               design_skin_images="vtourskin.png"
+	               design_bgcolor="0x2D3E50"
+	               design_bgalpha="0.0"
+	               design_bgborder="0"
+	               design_bgroundedge="1"
+	               design_bgshadow="0 4 10 0x000000 0"
+	               design_thumbborder_bgborder="4 0xFFD766 1.0"
+	               design_thumbborder_padding="2"
+	               design_thumbborder_bgroundedge="0"
+	               design_text_css="color:#FFFFFF; font-family:Arial;font-weight:bold;"
+	               design_text_shadow="1"
+	               />
+	<!--
+	    For an alternative skin design either change the <skin_settings> values 
+	    from above or optionally include one of the predefined designs from below.
+	-->
+	<!-- <include url="skin/vtourskin_design_flat_light.xml"  /> -->
+	<!-- <include url="skin/vtourskin_design_glass.xml"       /> -->
+	<!-- <include url="skin/vtourskin_design_ultra_light.xml" /> -->
+	<!-- <include url="skin/vtourskin_design_117.xml"         /> -->
+	<!-- <include url="skin/vtourskin_design_117round.xml"    /> -->
+	<!-- <include url="skin/vtourskin_design_black.xml"       /> -->
+	<!-- startup action - load the first scene -->
+	<action name="startup" autorun="onstart">
+		if(startscene === null OR !scene[get(startscene)], copy(startscene,scene[0].name); );
+			loadscene(get(startscene), null, MERGE);
+		if(startactions !== null, startactions() );
+	</action>
+	
+	<!-- 坐标点位置说明 -->
+	<action name="add_coordinate_tooltip">
+        txtadd(tooltipname, 'tooltip_', get(name));
+        addplugin(get(tooltipname));
+        txtadd(plugin[get(tooltipname)].parent, 'hotspot[', get(name), ']');
+		set(plugin[get(tooltipname)].type, 'text');
+        set(plugin[get(tooltipname)].align, top);
+        set(plugin[get(tooltipname)].edge, bottom);
+        set(plugin[get(tooltipname)].x, 0);
+        set(plugin[get(tooltipname)].y, 0);
+        set(plugin[get(tooltipname)].autowidth, true);
+        set(plugin[get(tooltipname)].autoheight, true);
+        set(plugin[get(tooltipname)].vcenter, true);
+        set(plugin[get(tooltipname)].background, true);
+        set(plugin[get(tooltipname)].backgroundcolor, 0x000000);
+        set(plugin[get(tooltipname)].roundedge, 5);
+        set(plugin[get(tooltipname)].backgroundalpha, 0.5);
+        set(plugin[get(tooltipname)].padding, '3 8');
+        set(plugin[get(tooltipname)].border, false);
+        set(plugin[get(tooltipname)].glow, 0);
+        set(plugin[get(tooltipname)].glowcolor, 0xFFFFFF);
+        set(plugin[get(tooltipname)].css,'text-align:center; color:#FFFFFF; font-family:MicrosoftYahei; font-size:14px;');
+        if(device.mobile,set(plugin[get(tooltipname)].css,'text-align:center; color:#FFFFFF; font-family:MicrosoftYahei; font-weight:bold; font-size:24px;');
+            );
+        set(plugin[get(tooltipname)].textshadow, 0);
+        set(plugin[get(tooltipname)].textshadowrange, 6.0);
+        set(plugin[get(tooltipname)].textshadowangle, 90);
+        if(text == '' OR text === null,
+        copy(plugin[get(tooltipname)].html, scene[get(linkedscene)].title),
+        copy(plugin[get(tooltipname)].html, text)
+        );    
+        set(plugin[get(tooltipname)].enabled, false);
+	</action>
+
+	<!-- 指示路标方向说明 -->
+	<action name="add_hotspot_tooltip">
+        txtadd(tooltipname, 'tooltip_', get(name));
+        addplugin(get(tooltipname));
+        txtadd(plugin[get(tooltipname)].parent, 'hotspot[', get(name), ']');
+		set(plugin[get(tooltipname)].type, 'text');
+        set(plugin[get(tooltipname)].align, top);
+        set(plugin[get(tooltipname)].edge, bottom);
+        set(plugin[get(tooltipname)].x, 0);
+        set(plugin[get(tooltipname)].y, 30);
+        set(plugin[get(tooltipname)].autowidth, true);
+        set(plugin[get(tooltipname)].autoheight, true);
+        set(plugin[get(tooltipname)].vcenter, true);
+        set(plugin[get(tooltipname)].background, true);
+        set(plugin[get(tooltipname)].backgroundcolor, 0x000000);
+        set(plugin[get(tooltipname)].roundedge, 5);
+        set(plugin[get(tooltipname)].backgroundalpha, 0.5);
+        set(plugin[get(tooltipname)].padding, '10 30');
+        set(plugin[get(tooltipname)].border, false);
+        set(plugin[get(tooltipname)].glow, 0);
+        set(plugin[get(tooltipname)].glowcolor, 0xFFFFFF);
+        set(plugin[get(tooltipname)].css,'text-align:center; color:#FFFFFF; font-family:MicrosoftYahei; font-size:26px;');
+        if(device.mobile,set(plugin[get(tooltipname)].css,'text-align:center; color:#FFFFFF; font-family:MicrosoftYahei; font-weight:bold; font-size:24px;');
+            );
+        set(plugin[get(tooltipname)].textshadow, 0);
+        set(plugin[get(tooltipname)].textshadowrange, 6.0);
+        set(plugin[get(tooltipname)].textshadowangle, 90);
+        if(text == '' OR text === null,
+        copy(plugin[get(tooltipname)].html, scene[get(linkedscene)].title),
+        copy(plugin[get(tooltipname)].html, text)
+        );    
+        set(plugin[get(tooltipname)].enabled, false);
+	</action>
+
+	<!-- 作物说明 -->
+	<action name="add_crop_tooltip">
+        txtadd(tooltipname, 'tooltip_', get(name));
+        addplugin(get(tooltipname));
+        txtadd(plugin[get(tooltipname)].parent, 'hotspot[', get(name), ']');
+		set(plugin[get(tooltipname)].type, 'text');
+        set(plugin[get(tooltipname)].align, top);
+        set(plugin[get(tooltipname)].edge, bottom);
+        set(plugin[get(tooltipname)].x, 0);
+        set(plugin[get(tooltipname)].y, 15);
+        set(plugin[get(tooltipname)].autowidth, true);
+        set(plugin[get(tooltipname)].autoheight, true);
+        set(plugin[get(tooltipname)].vcenter, true);
+        set(plugin[get(tooltipname)].background, true);
+        set(plugin[get(tooltipname)].backgroundcolor, 0x000000);
+        set(plugin[get(tooltipname)].roundedge, 5);
+        set(plugin[get(tooltipname)].backgroundalpha, 0.5);
+        set(plugin[get(tooltipname)].padding, '4 8');
+        set(plugin[get(tooltipname)].border, false);
+        set(plugin[get(tooltipname)].glow, 0);
+        set(plugin[get(tooltipname)].glowcolor, 0xFFFFFF);
+        set(plugin[get(tooltipname)].css,'text-align:center; color:#FFFFFF; font-family:MicrosoftYahei; font-size:14px;');
+        if(device.mobile,set(plugin[get(tooltipname)].css,'text-align:center; color:#FFFFFF; font-family:MicrosoftYahei; font-weight:bold; font-size:24px;');
+            );
+        set(plugin[get(tooltipname)].textshadow, 0);
+        set(plugin[get(tooltipname)].textshadowrange, 6.0);
+        set(plugin[get(tooltipname)].textshadowangle, 90);
+        if(text == '' OR text === null,
+        copy(plugin[get(tooltipname)].html, scene[get(linkedscene)].title),
+        copy(plugin[get(tooltipname)].html, text)
+        );    
+        set(plugin[get(tooltipname)].enabled, false);
+	</action>
+
+	<!-- 自动旋转 -->
+	<autorotate enabled="true" waittime="2.5" accel="2.0" speed="2.0" horizon="0.0" tofov="off" />
+
+	<scene name="scene1" title="苏星农场1号门" onstart="" thumburl="panos/DJI_0812.tiles/thumb.jpg" lat="31.56154053" lng="119.09473022" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="112" maxpixelzoom="2.0" fovmin="70" fovmax="130" limitview="auto" />
+		<preview url="panos/DJI_0812.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0812.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 春分路A -->
+		<hotspot name="springa_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="14.7"  ty="13.9" tz="150" ath="0" atv="0" 
+			linkedscene="scene20"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 玻璃温室门前 -->
+		<hotspot name="autumna_img" type="image" url="%VIEWER%/res/right_arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="25.8"  ty="38.5" tz="150" ath="0" atv="0" 
+			linkedscene="scene10"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 果林区 -->
+		<hotspot name="fruit_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="149.97"  ty="29.25" tz="-4.7" ath="102.35" atv="5.36" 
+			linkedscene="scene7"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+			
+		/>
+		<!-- popup('web', 'graphic.html', 6200, 2175, true); -->
+	</scene>
+
+	<scene name="scene2" title="农场全景A" onstart="" thumburl="panos/DJI_0813.tiles/thumb.jpg" lat="31.56356819" lng="119.09368669" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0813.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0813.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 管理用房 -->
+		<hotspot name="manage_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false"
+			enabled="true" tx="139.18"  ty="45.91" tz="42.45" ath="73.18" atv="17.2"
+			linkedscene="scene18"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 水生景观区 -->
+		<hotspot name="water_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" tx="12.09"  ty="144.08" tz="94.06" ath="23.9" atv="53.71" 
+			linkedscene="scene19"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 果林区 -->
+		<hotspot name="fruit_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" tx="-128.16"  ty="71.40" tz="-65.51" ath="-117.69" atv="24.14" 
+			linkedscene="scene7"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 生产有房 -->
+		<hotspot name="workshop_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" tx="143.41"  ty="50.1" tz="-44.91" ath="107.20" atv="16.38" 
+			linkedscene="scene15"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 光伏基站 -->
+		<hotspot name="station_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" tx="134.26"  ty="57.6" tz="-68.93" ath="117.03" atv="18.79" 
+			linkedscene="scene16"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 单体大棚 -->
+		<hotspot name="greenhouse_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" tx="150.65"  ty="84.93" tz="-19.38" ath="97.48" atv="27.44" 
+			linkedscene="scene14"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 苏星农场1号 -->
+		<hotspot name="enter_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" tx="-112.17"  ty="106.12" tz="77.84" ath="-53.98" atv="37.45" 
+			linkedscene="scene1"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 春分路A -->
+		<hotspot name="springa_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" tx="1.33"  ty="300.26" tz="151.41" ath="2.86" atv="61.6" 
+			linkedscene="scene20"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 春分路B -->
+		<hotspot name="springb_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true" tx="84.58"  ty="111.26" tz="45.56"  ath="65.73" atv="47.31"
+			linkedscene="scene22"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 秋分路A -->
+		<hotspot name="autumna_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-107.59" atv="54.24"
+			linkedscene="scene4"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 秋分路B -->
+		<hotspot name="autumnb_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-148.33" atv="70.83"
+			linkedscene="scene6"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 秋分路C -->
+		<hotspot name="autumnc_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="125.89" atv="52.22"
+			linkedscene="scene13"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 秋分路D -->
+		<hotspot name="autumnd_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="108.69" atv="23.07"
+			linkedscene="scene17"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 玻璃棚温室中心位置 -->
+		<hotspot name="glasscenter_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-78.64" atv="48.61"
+			linkedscene="scene21"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 玻璃温室A -->
+		<hotspot name="glassa_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-52.53" atv="48.39"
+			linkedscene="scene9"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 玻璃温室B -->
+		<hotspot name="glassb_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-67.34" atv="52.73"
+			linkedscene="scene11"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 玻璃温室C -->
+		<hotspot name="glassc_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-91.64" atv="52.05"
+			linkedscene="scene12"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 玻璃温室门前 -->
+		<hotspot name="glassdoor_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-78.2" atv="42.33"
+			linkedscene="scene10"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<scene name="scene3" title="农场全景B" onstart="" thumburl="panos/DJI_0814.tiles/thumb.jpg" lat="31.56417611" lng="119.09305919" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0814.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0814.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 管理用房 -->
+		<hotspot name="manage_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="158.44" atv="10.16"
+			linkedscene="scene18"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 水生景观区 -->
+		<hotspot name="water_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="92.18" atv="36.32" 
+			linkedscene="scene19"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 果林区 -->
+		<hotspot name="fruit_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="-18.47" atv="11.18" 
+			linkedscene="scene7"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 生产有房 -->
+		<hotspot name="workshop_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="-160.43" atv="10.82" 
+			linkedscene="scene15"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 光伏基站 -->
+		<hotspot name="station_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="-147.59" atv="13.08" 
+			linkedscene="scene16"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 单体大棚 -->
+		<hotspot name="greenhouse_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="-172.37" atv="21.81" 
+			linkedscene="scene14"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 苏星农场1号 -->
+		<hotspot name="enter_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="32.18" atv="16.32" 
+			linkedscene="scene1"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 春分路A -->
+		<hotspot name="springa_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="57.73" atv="33.86" 
+			linkedscene="scene20"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 春分路B -->
+		<hotspot name="springb_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true" ath="122.09" atv="41.18"
+			linkedscene="scene22"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 秋分路A -->
+		<hotspot name="autumna_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-2.28" atv="25.56"
+			linkedscene="scene4"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 秋分路B -->
+		<hotspot name="autumnb_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-12.45" atv="40.94"
+			linkedscene="scene6"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 秋分路C -->
+		<hotspot name="autumnc_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-115.53" atv="57.95"
+			linkedscene="scene13"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 秋分路D -->
+		<hotspot name="autumnd_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-158.05" atv="17.42"
+			linkedscene="scene17"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 玻璃棚温室中心位置 -->
+		<hotspot name="glasscenter_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="15.76" atv="25.5"
+			linkedscene="scene21"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 玻璃温室A -->
+		<hotspot name="glassa_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="35.55" atv="26.42"
+			linkedscene="scene9"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 玻璃温室B -->
+		<hotspot name="glassb_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="23.54" atv="28.82"
+			linkedscene="scene11"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 玻璃温室C -->
+		<hotspot name="glassc_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="6.6" atv="29.31"
+			linkedscene="scene12"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 玻璃温室门前 -->
+		<hotspot name="glassdoor_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="14.91" atv="18.07"
+			linkedscene="scene10"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<scene name="scene4" title="秋分路A" onstart="" thumburl="panos/DJI_0815.tiles/thumb.jpg" lat="31.56328861" lng="119.09505833" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0815.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0815.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 玻璃棚温室中心位置 -->
+		<hotspot name="glasscenter_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="0.35" atv="3.06"
+			linkedscene="scene21"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 玻璃温室门前 -->
+		<hotspot name="autumna_img" type="image" url="%VIEWER%/res/right_arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="-147.19"  ty="20.61" tz="-5.29" ath="-95.3" atv="11.39" 
+			linkedscene="scene10"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 秋分路B -->
+		<hotspot name="autumnb_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="157.19"  ty="33.07" tz="0.47" ath="72.26" atv="2.51" 
+			linkedscene="scene6"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="49.92" atv="-22.88"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<!-- <scene name="scene5" title="秋分路东大门" onstart="" thumburl="panos/DJI_0816.tiles/thumb.jpg" lat="31.56329636" lng="119.09505356" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="112" maxpixelzoom="2.0" fovmin="70" fovmax="130" limitview="auto" />
+		<preview url="panos/DJI_0816.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0816.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+	</scene> -->
+
+	<scene name="scene6" title="秋分路B" onstart="" thumburl="panos/DJI_0817.tiles/thumb.jpg" lat="31.56388994" lng="119.09430750" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0817.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0817.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="49.92" atv="-22.88"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 秋分路A -->
+		<hotspot name="autumna_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="-150"  ty="35.44" tz="3" ath="256.14" atv="28.19" 
+			linkedscene="scene4"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 春分路A -->
+		<hotspot name="springa_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="0.23"  ty="25.57" tz="137.21" ath="-366.41" atv="24.65" 
+			linkedscene="scene20"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 秋分路C -->
+		<hotspot name="autumnb_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="137.82"  ty="31.76" tz="12.98" ath="-269.22" atv="23.43" 
+			linkedscene="scene13"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<scene name="scene7" title="果林区" onstart="" thumburl="panos/DJI_0818.tiles/thumb.jpg" lat="31.56339514" lng="119.09773586" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0818.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0818.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-82.83" atv="-13.63"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 苏星农场1号门 -->
+		<hotspot name="enter_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-117.51" atv="3.54"
+			linkedscene="scene1"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<!-- <scene name="scene8" title="科技未来一号馆" onstart="" thumburl="panos/DJI_0819.tiles/thumb.jpg" lat="31.56390436" lng="119.09423561" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="112" maxpixelzoom="2.0" fovmin="70" fovmax="130" limitview="auto" />
+		<preview url="panos/DJI_0819.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0819.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+	</scene> -->
+
+	<scene name="scene9" title="玻璃温室A" onstart="" thumburl="panos/DJI_0821.tiles/thumb.jpg" lat="31.56199244" lng="119.09463572" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0821.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0821.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="25" atv="-19.8"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 玻璃温室门前 -->
+		<hotspot name="autumna_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="-47.07"  ty="23.18" tz="142.53" ath="343.86" atv="-0.5" 
+			linkedscene="scene10"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<scene name="scene10" title="玻璃温室门前" onstart="" thumburl="panos/DJI_0824.tiles/thumb.jpg" lat="31.56230644" lng="119.09524833" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0824.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0824.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-0.22" atv="-26.02"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 秋分路A -->
+		<hotspot name="autumna_img" type="image" url="%VIEWER%/res/left_arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="148.14"  ty="13.46" tz="1.74" ath="91.16" atv="9.19" 
+			linkedscene="scene4"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 苏星农场1号门 -->
+		<hotspot name="enter_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="-146.96"  ty="33.43" tz="-1.76" ath="-458.62" atv="13.98" 
+			linkedscene="scene1"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 玻璃温室A -->
+		<hotspot name="glassa_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-88.95" atv="2.38"
+			linkedscene="scene9"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 玻璃温室B -->
+		<hotspot name="glassb_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-82.14" atv="8.66"
+			linkedscene="scene11"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 玻璃温室C -->
+		<hotspot name="glassc_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="78.84" atv="11.19"
+			linkedscene="scene12"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<scene name="scene11" title="玻璃温室B" onstart="" thumburl="panos/DJI_0825.tiles/thumb.jpg" lat="31.56270064" lng="119.09540994" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0825.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0825.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="25" atv="-19.8"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 玻璃温室门前 -->
+		<hotspot name="autumna_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="2.57"  ty="19" tz="149.99" ath="0.33" atv="0" 
+			linkedscene="scene10"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<scene name="scene12" title="玻璃温室C" onstart="" thumburl="panos/DJI_0827.tiles/thumb.jpg" lat="31.56290161" lng="119.09499347" heading="0.0">
+		<view hlookat="-180.0" vlookat="0.0" fovtype="MFOV" fov="112" maxpixelzoom="2.0" fovmin="70" fovmax="130" limitview="auto" />
+		<preview url="panos/DJI_0827.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0827.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<hotspot name="qianxi_img" type="image" url="%VIEWER%/res/zoom.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="true" text="千禧果"
+			enabled="true" ath="89.48" atv="12.33" 
+			onloaded="do_crop_animation(128, 128, 60); add_crop_tooltip();"
+			onclick="popup('web', 'graphic.html?type=1', 6200, 1920, true);"
+		/>
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="152.08" atv="-19.83"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 玻璃温室门前 -->
+		<hotspot name="autumna_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="-49.44"  ty="8.3" tz="-141.75" ath="-163.94" atv="-2.1" 
+			linkedscene="scene10"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<scene name="scene13" title="秋分路C" onstart="" thumburl="panos/DJI_0828.tiles/thumb.jpg" lat="31.56471567" lng="119.09321917" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0828.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0828.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="26.96" atv="-23.63"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 秋分路B -->
+		<hotspot name="autumnb_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="-149.83"  ty="38.95" tz="-7.56" ath="-93.77" atv="0" 
+			linkedscene="scene6"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 秋分路D -->
+		<hotspot name="autumnd_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="149.86"  ty="35.87" tz="11.71" ath="89.23" atv="0" 
+			linkedscene="scene17"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<scene name="scene14" title="单体大棚" onstart="" thumburl="panos/DJI_0830.tiles/thumb.jpg" lat="31.56552014" lng="119.09107892" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0830.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0830.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-19.62" atv="-26.31"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 管理用房 -->
+		<hotspot name="manage_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="115" atv="-4.44"
+			linkedscene="scene18"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 生产有房 -->
+		<hotspot name="workshop_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="-157.17" atv="-2.16" 
+			linkedscene="scene15"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+
+		<!-- 光伏基站 -->
+		<hotspot name="station_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="-132.08" atv="-0.95" 
+			linkedscene="scene16"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<scene name="scene15" title="生产有房" onstart="" thumburl="panos/DJI_0833.tiles/thumb.jpg" lat="31.56705664" lng="119.09038844" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0833.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0833.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<hotspot name="qianxi_img" type="image" url="%VIEWER%/res/zoom.png" alpha="1" scale="0.4" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="true" text="荣誉墙"
+			enabled="true" ath="177.1" atv="4"
+			onloaded="do_crop_animation(128, 128, 60);add_crop_tooltip();"
+			onclick="popup('web', 'swiper.html', 6200, 1920, true);"
+		/>
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-19.62" atv="-26.31"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 秋分路D -->
+		<hotspot name="autumnd_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="-57.83"  ty="49.21" tz="-138.42" ath="201.83" atv="0" 
+			linkedscene="scene17"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<scene name="scene16" title="光伏基站" onstart="" thumburl="panos/DJI_0834.tiles/thumb.jpg" lat="31.56717417" lng="119.09126844" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0834.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0834.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-59.44" atv="-16.43"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 生产有房 -->
+		<hotspot name="workshop_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="-1.58" atv="-0.33" 
+			linkedscene="scene15"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 单体大棚 -->
+		<hotspot name="greenhouse_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="-91" atv="1.78" 
+			linkedscene="scene14"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<scene name="scene17" title="秋分路D" onstart="" thumburl="panos/DJI_0835.tiles/thumb.jpg" lat="31.56692033" lng="119.09038778" heading="0.0">
+		<view hlookat="90.0" vlookat="0.0" fovtype="MFOV" fov="112" maxpixelzoom="2.0" fovmin="70" fovmax="130" limitview="auto" />
+		<preview url="panos/DJI_0835.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0835.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="108.06" atv="-16.23"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 秋分路C -->
+		<hotspot name="autumnc_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="154"  ty="49.63" tz="6.32" ath="90" atv="0" rotate="-10"
+			linkedscene="scene13"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 生产有房 -->
+		<hotspot name="workshop_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="-135.67"  ty="100.62" tz="-31.99" ath="266.27" atv="23.59" 
+			linkedscene="scene15"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 管理用房 -->
+		<hotspot name="manage_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="-1.73"  ty="52.88" tz="-134.07" ath="175.22" atv="27.16" 
+			linkedscene="scene18"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<scene name="scene18" title="管理用房" onstart="" thumburl="panos/DJI_0836.tiles/thumb.jpg" lat="31.56477306" lng="119.08919939" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0836.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0836.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="147.22" atv="-13.52"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 生产有房 -->
+		<hotspot name="workshop_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="146.43"  ty="31.55" tz="32.51" ath="-261.81" atv="20.71" 
+			linkedscene="scene15"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 水生景观区 -->
+		<hotspot name="water_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="-147.37" atv="0.89" 
+			linkedscene="scene19"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<scene name="scene19" title="水生景观区" onstart="" thumburl="panos/DJI_0838.tiles/thumb.jpg" lat="31.56264300" lng="119.09289567" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0838.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0838.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-79.64" atv="-16.92"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 管理用房 -->
+		<hotspot name="manage_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="146.63" atv="-3.97"
+			linkedscene="scene18"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 苏星农场1号 -->
+		<hotspot name="enter_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="-28.91" atv="2.05" 
+			linkedscene="scene1"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 春分路A -->
+		<hotspot name="springa_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="-106.57" atv="16.98" 
+			linkedscene="scene20"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 春分路B -->
+		<hotspot name="springb_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true" ath="169.89" atv="0.19"
+			linkedscene="scene22"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 秋分路B -->
+		<hotspot name="autumnb_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-109.72" atv="3.61"
+			linkedscene="scene6"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 玻璃温室A -->
+		<hotspot name="glassa_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-50.44" atv="1.56"
+			linkedscene="scene9"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<scene name="scene20" title="春分路A" onstart="" thumburl="panos/DJI_0840.tiles/thumb.jpg" lat="31.56284600" lng="119.09313619" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0840.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0840.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-79.64" atv="-16.92"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 管理用房 -->
+		<hotspot name="manage_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="152.16" atv="-2.29"
+			linkedscene="scene18"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 水生景观区 -->
+		<hotspot name="water_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="82.09" atv="14.42" 
+			linkedscene="scene19"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 苏星农场1号 -->
+		<hotspot name="enter_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="-18.77"  ty="55.06" tz="160.27" ath="-35.67" atv="19.78" 
+			linkedscene="scene1"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 春分路B -->
+		<hotspot name="springb_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="46.85"  ty="61.41" tz="-149.01" ath="-157.6" atv="36.92"
+			linkedscene="scene22"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 秋分路B -->
+		<hotspot name="autumnb_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="-127.5"  ty="57.19" tz="-13.41" ath="-464.61" atv="32.32"
+			linkedscene="scene6"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<scene name="scene21" title="玻璃棚温室中心位置" onstart="" thumburl="panos/DJI_0841.tiles/thumb.jpg" lat="31.56287114" lng="119.09456161" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0841.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0841.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="-79.64" atv="-16.92"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 春分路A -->
+		<hotspot name="springa_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="-142.26"  ty="47.44" tz="-8.93" ath="-89.2" atv="18.28"
+			linkedscene="scene20"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 秋分路A -->
+		<hotspot name="autumna_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="133.73"  ty="63.43" tz="-27.2" ath="-270" atv="26.93"
+			linkedscene="scene4"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 单体大棚 -->
+		<hotspot name="greenhouse_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="-7.22"  ty="57.3" tz="-128.38" ath="-175.45" atv="31.02"
+			linkedscene="scene14"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 玻璃温室门前 -->
+		<hotspot name="glassdoor_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="1.1"  ty="66.08" tz="123.74" ath="3.22" atv="34.51"
+			linkedscene="scene10"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+
+	<scene name="scene22" title="春分路B" onstart="" thumburl="panos/DJI_0842.tiles/thumb.jpg" lat="31.56367692" lng="119.09206167" heading="0.0">
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/DJI_0842.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/DJI_0842.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280,2624" />
+		</image>
+		<!-- 农场全景A -->
+		<hotspot name="sky_img" type="image" url="%VIEWER%/res/sky.png" alpha="1" scale="0.4" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" torigin="world" capture="false" zoom="true"
+			enabled="true"   ath="122.74" atv="-14.5"
+			linkedscene="scene2"
+			onloaded="do_crop_animation(128, 128, 120);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 管理用房 -->
+		<hotspot name="manage_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="1.7" atv="-1.82"
+			linkedscene="scene18"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 水生景观区 -->
+		<hotspot name="water_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="-122.73" atv="12.58" 
+			linkedscene="scene19"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 春分路A -->
+		<hotspot name="springa_img" type="image" url="%VIEWER%/res/arrow.png" alpha="1" scale="0.08" width="100" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" distorted="true" torigin="world" capture="false" 
+			enabled="true" tx="-55.46"  ty="80.19" tz="-121.28" ath="-512.57" atv="27.38"
+			linkedscene="scene20"
+			onloaded="do_crop_animation(128, 128, 60);add_hotspot_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+		<!-- 单体大棚 -->
+		<hotspot name="greenhouse_img" type="image" url="%VIEWER%/res/coord.png" alpha="1" scale="0.15" width="" height="" keep="false" 
+			oversampling="2" mipmapping="true" depth="0"  depthbuffer="true" zoom="true" torigin="world" capture="false" 
+			enabled="true" ath="50.04" atv="1.74" 
+			linkedscene="scene14"
+			onloaded="do_crop_animation(300, 300, 30);add_coordinate_tooltip();"
+			onclick="switch_scene_onclick();"
+		/>
+	</scene>
+</krpano>

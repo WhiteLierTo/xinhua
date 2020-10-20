@@ -1,0 +1,45 @@
+@media screen and (max-width: 1400px) {
+  .table-width-filter-container {
+    /* 输入框的高度 */
+    /* 时间选择器的高度 */
+    /* 选择器的下拉箭头 */
+    /* 时间选择器的左侧图标 */
+    /* 时间选择器的中间图标 */
+  }
+  .table-width-filter-container .el-input--small .el-input__inner {
+    height: 25px;
+    font-size: 12px;
+    border-radius: 2px;
+  }
+  .table-width-filter-container .el-range-editor--small.el-input__inner {
+    height: 25px;
+    font-size: 12px;
+    border-radius: 2px;
+  }
+  .table-width-filter-container .el-input--small .el-input__icon {
+    line-height: 25px;
+  }
+  .table-width-filter-container .el-range-editor--small .el-range__close-icon,
+  .table-width-filter-container .el-range-editor--small .el-range__icon {
+    line-height: 18px;
+  }
+  .table-width-filter-container .el-range-editor--small .el-range-separator {
+    line-height: 18px;
+  }
+  .table-width-filter-container .el-button--small:not(.el-button--text) {
+    padding: 0 8px;
+    height: 25px;
+  }
+  .el-pagination {
+    padding: 0;
+  }
+  .el-pagination * {
+    font-size: 12px !important;
+  }
+  .breadcrumb-container .el-breadcrumb__inner {
+    font-size: 12px !important;
+  }
+}
+.el-input--small .el-input__inner {
+  border-radius: 2px;
+}
